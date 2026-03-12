@@ -59,6 +59,7 @@
   computer (to use my capable computer for AI development), in a local
   VM/Docker, or in the cloud
 - it runs completely headless, I interact with it through my code forge web UI
+- `ai-team init` creates the config and prompt files
 
 Config file:
 
