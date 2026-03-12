@@ -1,6 +1,14 @@
-# AI team
+# Co-Bot
 
-> Human and AI develop software as a team.
+> Ergonomic asynchronous human-AI collaboration
+
+- gives humans time to think
+- gives AI time to think and test hypotheses
+- the most direct path to high-quality AI results
+- the tool to reach for when creating high-quality results that require human
+  guidance and review
+
+Icon: human and robot high-fiving each other
 
 ## Functionality
 
@@ -13,20 +21,25 @@
 
 ### Planning
 
-- the planner agent creates an implementation plan
-  - based on the planning instructions for the repo
-  - based on reads the ticket
+- the planner agent analyzes the problem and creates an implementation plan
+  - based on the planning instructions for this repo
+  - based on the ticket text
 - it opens a draft PR for this ticket containing an MD file with the
-  implementation plan
+  implementation plan (`.co-bot/ticket.md`)
 - implementation plan review loop
   - human adds comments, modifications, and instructions what to change to the
-    file
-  - it implements the instruction
-  - when the human is happy, they approve the plan
+    file via the forge UI (like a normal code review)
+  - AI implements all suggestions
+  - review loop is done when the human approves the plan, otherwise do another
+    iteration
 
 ### Implementation
 
 - coding agent implements the plan
+  - one action item at a time
+  - each action item as a new query
+    - plan as context
+    - summary of existing changes as context
   - tests first (red/green)
 - documentation agent adds/updates documentation
 
@@ -57,9 +70,10 @@
 - CLI app written in Rust
 - I run the CLI app (one or many instances) in a separate desktops on my
   computer (to use my capable computer for AI development), in a local
-  VM/Docker, or in the cloud
+  VM/Docker, or on a cloud VM
 - it runs completely headless, I interact with it through my code forge web UI
 - `ai-team init` creates the config and prompt files
+- receives updates from the forge by polling the forge API
 
 Config file:
 
@@ -67,24 +81,40 @@ Config file:
 [tracker]
 type = "Jira"
 url = "https://jira.walmart.com"
+human = "k0g0kip"
 token_env_var = "JIRA_TOKEN"  # name of the env var from which to read the access token for the tracker
 
 [forge]
-type = "GitHub"
+type = "github"
 url = "gec01.walmart.com"
+human = "kevgo"                 # forge user account of the human user
+bot = "co-bot"                  # forge user account of bot
 token_env_var = "GITHUB_TOKEN"  # name of the env var from which to read the access token for the forge
 
-[LLM]
-cli = "wibey -p '{prompt}'"  # placeholder for the prompt
+[coding]
+llm-cli = "wibey -p '{prompt}'"  # placeholder for the prompt
+timeout = "1h"                   # abort and reach out to the human if the coding takes longer than 1h
 
-[agents]
-planner.model = "opus"
-coder.model = "sonnet"
-reviewer.model = "opus"
-documenter.model = "sonnet"
+[agents.planner]
+model = "opus"
+
+[agents.coder]
+model = "sonnet"
+
+[agents.reviewer]
+model = "opus"
+
+[agents.documenter]
+model = "sonnet"
+
+[workflows.bug-fix]
+phases = [ "build", "test", "review" ]
+
+[workflows.feature]
+phases = [ "plan", "build", "test", "review" ]
 ```
 
-Prompt files in the `.ai-team` folder:
+Prompt files in the `.co-bot/phases` folder:
 
 - `planner.md`
 
