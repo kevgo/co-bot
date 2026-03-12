@@ -74,21 +74,37 @@ url = "gec01.walmart.com"
 token_env_var = "GITHUB_TOKEN"  # name of the env var from which to read the access token for the forge
 
 [LLM]
-call = "wibey -p '{prompt}'"  # placeholder for the prompt
+cli = "wibey -p '{prompt}'"  # placeholder for the prompt
 
 [agents]
-planner = """
-You are a planner...
-"""
-coder = """
-You are an expert Python software developer...
-"""
-
-reviewer = """
-You are an export code reviewer...
-"""
-
-documenter = """
-You are an expert technical documenter...
-"""
+planner.model = "opus"
+coder.model = "sonnet"
+reviewer.model = "opus"
+documenter.model = "sonnet"
 ```
+
+Prompt files in the `.ai-team` folder:
+
+- `planner.md`
+
+  ```md
+  You are a planner...
+  ```
+
+- `coder.md`
+
+  ```md
+  You are an expert Python software developer...
+  ```
+
+- `reviewer.md`
+
+  ```
+  You are an export code reviewer...
+  ```
+
+- `documenter.md`
+
+  ```
+  You are an expert technical documenter...
+  ```
