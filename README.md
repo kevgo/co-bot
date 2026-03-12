@@ -17,7 +17,7 @@ Icon: human and robot high-fiving each other
 - I run the CLI app on a separate desktop on my computer
 - I tell it to implement a ticket (Jira, GitHub)
   - it prints all applicable tickets, I select one
-- it creates a new Git worktree for the ticket
+- it clones the Git repo or creates a new Git worktree for the ticket
 
 ### Planning
 
