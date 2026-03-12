@@ -71,7 +71,8 @@ Icon: human and robot high-fiving each other
 - I run the CLI app (one or many instances) in a separate desktops on my
   computer (to use my capable computer for AI development), in a local
   VM/Docker, or on a cloud VM
-- it runs completely headless, I interact with it through my code forge web UI
+- it runs headless, I interact with it through the web UI of my code forge
+  - similar to how I interact with human code contributors
 - `ai-team init` creates the config and prompt files
 - receives updates from the forge by polling the forge API
 
@@ -87,18 +88,20 @@ token_env_var = "JIRA_TOKEN"  # name of the env var from which to read the acces
 [forge]
 type = "github"
 url = "gec01.walmart.com"
-human = "kevgo"                 # forge user account of the human user
-bot = "co-bot"                  # forge user account of bot
-token_env_var = "GITHUB_TOKEN"  # name of the env var from which to read the access token for the forge
+human-account = "kevgo"                 # forge user account of the human user
+bot-account = "co-bot"                  # forge user account of bot
+bot-token-env-var = "GITHUB_TOKEN"  # name of the env var from which to read the access token for the forge
 
 [coding]
 llm-cli = "wibey -p '{prompt}'"  # placeholder for the prompt
 timeout = "1h"                   # abort and reach out to the human if the coding takes longer than 1h
+after-code = "make test"         # code snippet to run after 
 
-[agents.planner]
+[phases.plan]
 model = "opus"
+query-file = "query.md"      # file that contains the plan query, could also use `query` to make the query inline
 
-[agents.coder]
+[phases.code]
 model = "sonnet"
 
 [agents.reviewer]
