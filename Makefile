@@ -17,6 +17,7 @@ lint: tools/rta@${RUN_THAT_APP_VERSION}  # finds code smells
 	git diff --check
 	tools/rta dprint check
 	cargo clippy --all-targets --all-features -- --deny=warnings
+	tools/rta actionlint
 	cargo machete
 
 run:  # runs in the local directory
