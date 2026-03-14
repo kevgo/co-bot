@@ -2,6 +2,7 @@ mod cli;
 mod commands;
 mod config;
 mod errors;
+mod trackers;
 
 use crate::cli::Command;
 use clap::Parser;
@@ -20,8 +21,7 @@ fn main() -> ExitCode {
 
 fn inner() -> Result<ExitCode> {
     let args = cli::Args::parse();
-    let config = config::Config::load("co-bot.toml").unwrap();
     match args.command {
-        Command::Run { ticket: issue } => commands::run(issue, config),
+        Command::Run { ticket } => commands::run(ticket),
     }
 }

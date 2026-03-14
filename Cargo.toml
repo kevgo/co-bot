@@ -4,6 +4,9 @@ version = "0.0.0"
 edition = "2024"
 
 [dependencies]
+big_s = "1.0.2"
 clap = { version = "4.6.0", features = ["derive"] }
+roctogen = { version = "0.50.0", features = ["ureq"] }
+roctokit = { version = "0.15.0", features = ["ureq"] }
 serde = { version = "1.0.228", features = ["derive"] }
 toml = "1.0.6"

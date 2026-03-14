@@ -2,6 +2,18 @@ use crate::errors::{Result, UserError};
 use serde::Deserialize;
 use std::fmt::Display;
 
+const FILE_NAME: &str = "co-bot.toml";
+
+pub fn load() -> Result<Config> {
+    let Ok(content) = std::fs::read_to_string(FILE_NAME) else {
+        return Err(UserError::ConfigFileNotFound(FILE_NAME.to_string()));
+    };
+    toml::from_str(&content).map_err(|err| UserError::ConfigFileInvalidContent {
+        path: FILE_NAME.to_string(),
+        err: err.to_string(),
+    })
+}
+
 #[derive(Debug, Deserialize)]
 pub struct Config {
     pub tracker: Tracker,
@@ -27,20 +39,14 @@ impl Display for TrackerType {
     }
 }
 
-impl Config {
-    pub fn load(path: &str) -> Result<Config> {
-        let Ok(content) = std::fs::read_to_string(path) else {
-            return Err(UserError::ConfigFileNotFound(path.to_string()));
-        };
-        toml::from_str(&content).map_err(|err| UserError::ConfigFileInvalidContent(err.to_string()))
-    }
-}
-
 impl TryFrom<&str> for Config {
     type Error = UserError;
 
     fn try_from(text: &str) -> Result<Self> {
-        toml::from_str(text).map_err(|err| UserError::ConfigFileInvalidContent(err.to_string()))
+        toml::from_str(text).map_err(|err| UserError::ConfigFileInvalidContent {
+            path: FILE_NAME.to_string(),
+            err: err.to_string(),
+        })
     }
 }
 
@@ -66,7 +72,7 @@ token_source = "gh"
 
     #[test]
     fn load_from_file() {
-        let config = Config::load("co-bot.toml").unwrap();
+        let config = super::load().unwrap();
         assert_eq!(config.tracker.tracker_type, TrackerType::GitHub);
         assert_eq!(config.tracker.url, "https://github.com/kevgo/co-bot/issues");
     }

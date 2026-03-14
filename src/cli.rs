@@ -1,5 +1,7 @@
 use clap::Parser;
 
+use crate::trackers;
+
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Args {
@@ -12,6 +14,6 @@ pub struct Args {
 pub enum Command {
     Run {
         /// ID or URL of the ticket to implement
-        ticket: String,
+        ticket: trackers::IssueIdOrUrl,
     },
 }
