@@ -14,7 +14,11 @@ pub fn workspace_path(
 }
 
 fn escape(text: &str) -> String {
-    text.to_lowercase().replace(' ', "-")
+    text.to_lowercase()
+        .replace(' ', "-")
+        .chars()
+        .filter(|c| c.is_ascii_alphanumeric() || *c == '-')
+        .collect()
 }
 
 #[cfg(test)]

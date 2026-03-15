@@ -2,7 +2,7 @@
 type = "GitHub"
 url = "https://github.com/kevgo/co-bot/issues"
 human = "kevgo"
-token_source = "git config git-town.github-token"  # shell script that prints the tracker token
+token-source = "git config git-town.github-token"  # shell script that prints the tracker token
 
 [git]
 # how to calculate the directory that contains the Git workspace for the ticket

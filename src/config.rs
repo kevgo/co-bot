@@ -24,10 +24,11 @@ pub struct Config {
 }
 
 #[derive(Debug, Deserialize)]
-#[serde(rename_all = "kebab-case")]
 pub struct Tracker {
+    #[serde(rename = "type")]
     pub tracker_type: TrackerType,
     pub url: String,
+    #[serde(rename = "token-source")]
     pub token_source: String,
 }
 
@@ -71,7 +72,12 @@ mod tests {
 [tracker]
 type = "GitHub"
 url = "https://github.com/kevgo/co-bot/issues"
-token_source = "gh"
+token-source = "git config git-town.github-token"
+
+[git]
+workspace-path = "../{{ticket.id}}-{{ticket.title}}"
+create-workspace = "git worktree add ../{{workspace}}"
+create-branch = "git town hack {{workspace}}"
 "#;
 
     #[test]
