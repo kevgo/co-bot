@@ -6,21 +6,22 @@ use roctokit::adapters::client;
 use roctokit::adapters::ureq::Client;
 use roctokit::auth::Auth;
 
-pub fn new(url: &str) -> Result<GitHubIssues> {
+pub fn new(url: &str, token: String) -> Result<GitHubIssues> {
     let (owner, repo) = parse_github_url(url)?;
-    Ok(GitHubIssues { owner, repo })
+    Ok(GitHubIssues { owner, repo, token })
 }
 
 /// provides access to the issue tracker on github.com
 pub struct GitHubIssues {
     pub owner: String,
     pub repo: String,
+    pub token: String,
 }
 
 impl GitHubIssues {
     /// provides a GitHub API client instance
     fn client(&self) -> Client {
-        let auth = Auth::Token(S(""));
+        let auth = Auth::Token(self.token.clone());
         client(&auth).expect("Cannot create new client")
     }
 }

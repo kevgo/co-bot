@@ -5,6 +5,8 @@ pub type Result<T> = std::result::Result<T, UserError>;
 #[derive(Debug, Eq, PartialEq)]
 pub enum UserError {
     CannotLoadGitHubIssue { issue_id: String, err: String },
+    CannotRunSubshellCommand { command: String, err: String },
+    CommandReturnedInvalidUTF8 { command: String, err: String },
     ConfigFileNotFound(String),
     ConfigFileInvalidContent { path: String, err: String },
     InvalidGitHubIssuesHost { host: String, err: String },
@@ -16,6 +18,12 @@ impl Display for UserError {
         match self {
             UserError::CannotLoadGitHubIssue { issue_id, err } => {
                 write!(f, "cannot load GitHub Issue #{issue_id}: {err}")
+            }
+            UserError::CannotRunSubshellCommand { command, err } => {
+                write!(f, "cannot run subshell command '{command}': {err}")
+            }
+            UserError::CommandReturnedInvalidUTF8 { command, err } => {
+                write!(f, "command '{command}' returned invalid UTF-8: {err}")
             }
             UserError::ConfigFileNotFound(path) => {
                 write!(f, "Config file '{path}' not found")

@@ -2,4 +2,4 @@
 type = "GitHub"
 url = "https://github.com/kevgo/co-bot/issues"
 human = "kevgo"
-token_source = "gh"  # name of the env var from which to read the access token for the tracker
+token_source = "git config git-town.github-token"  # shell script that prints the tracker token

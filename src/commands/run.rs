@@ -1,12 +1,14 @@
 use crate::domain::IssueIdOrUrl;
 use crate::errors::Result;
-use crate::{config, connectors};
+use crate::{config, connectors, subshell};
 use std::process::ExitCode;
 
 pub fn run(issue: IssueIdOrUrl) -> Result<ExitCode> {
     let issue_id = issue.id()?;
     let config = config::load()?;
-    let tracker = connectors::load_tracker(&config.tracker)?;
+    let tracker_token = subshell::run(&config.tracker.token_source)?;
+    println!("Tracker token: {}", tracker_token);
+    let tracker = connectors::load_tracker(&config.tracker, tracker_token)?;
     println!(
         "Tracker: {} ({})",
         config.tracker.tracker_type, config.tracker.url

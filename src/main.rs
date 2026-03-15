@@ -4,6 +4,7 @@ mod config;
 mod connectors;
 mod domain;
 mod errors;
+mod subshell;
 
 use crate::cli::Command;
 use clap::Parser;

@@ -9,8 +9,8 @@ pub trait Tracker {
     fn issue_text(&self, issue: &IssueId) -> Result<String>;
 }
 
-pub fn load_tracker(config: &config::Tracker) -> Result<Box<dyn Tracker>> {
+pub fn load_tracker(config: &config::Tracker, tracker_token: String) -> Result<Box<dyn Tracker>> {
     match config.tracker_type {
-        TrackerType::GitHub => Ok(Box::new(github::new(&config.url)?)),
+        TrackerType::GitHub => Ok(Box::new(github::new(&config.url, tracker_token)?)),
     }
 }

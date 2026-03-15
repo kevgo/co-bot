@@ -26,6 +26,7 @@ pub struct Tracker {
     #[serde(rename = "type")]
     pub tracker_type: TrackerType,
     pub url: String,
+    pub token_source: String,
 }
 
 #[derive(Debug, Deserialize, Eq, PartialEq)]
