@@ -1,8 +1,8 @@
 mod cli;
 mod commands;
 mod config;
+mod connectors;
 mod errors;
-mod trackers;
 
 use crate::cli::Command;
 use clap::Parser;

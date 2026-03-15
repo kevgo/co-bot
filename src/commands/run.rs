@@ -1,12 +1,12 @@
+use crate::connectors::IssueIdOrUrl;
 use crate::errors::Result;
-use crate::trackers::IssueIdOrUrl;
-use crate::{config, trackers};
+use crate::{config, connectors};
 use std::process::ExitCode;
 
 pub fn run(issue: IssueIdOrUrl) -> Result<ExitCode> {
     let issue_id = issue.id()?;
     let config = config::load()?;
-    let tracker = trackers::get_tracker(&config)?;
+    let tracker = connectors::get_tracker(&config)?;
     println!(
         "Tracker: {} ({})",
         config.tracker.tracker_type, config.tracker.url

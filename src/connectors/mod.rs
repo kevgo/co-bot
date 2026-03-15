@@ -5,6 +5,7 @@ use crate::config::{Config, TrackerType};
 use crate::errors::Result;
 pub use issue_id::{IssueId, IssueIdOrUrl};
 
+/// Trackers store tickets to implement
 pub trait Tracker {
     /// provides an AI-friendly text serialization of the issue with the given id
     fn issue_text(&self, issue: &IssueId) -> Result<String>;

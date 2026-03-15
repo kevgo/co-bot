@@ -1,5 +1,5 @@
+use crate::connectors::{IssueId, Tracker};
 use crate::errors::{Result, UserError};
-use crate::trackers::{IssueId, Tracker};
 use big_s::S;
 use roctogen::endpoints::issues;
 use roctokit::adapters::client;
