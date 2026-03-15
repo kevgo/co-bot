@@ -17,16 +17,26 @@ pub fn load() -> Result<Config> {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct Config {
     pub tracker: Tracker,
+    pub git: Git,
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct Tracker {
-    #[serde(rename = "type")]
     pub tracker_type: TrackerType,
     pub url: String,
     pub token_source: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub struct Git {
+    pub workspace_path: String,
+    pub create_workspace: String,
+    pub create_branch: String,
 }
 
 #[derive(Debug, Deserialize, Eq, PartialEq)]

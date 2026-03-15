@@ -4,6 +4,8 @@ mod config;
 mod connectors;
 mod domain;
 mod errors;
+mod git;
+mod logger;
 mod subshell;
 
 use crate::cli::Command;

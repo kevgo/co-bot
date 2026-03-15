@@ -4,18 +4,58 @@ pub type Result<T> = std::result::Result<T, UserError>;
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum UserError {
-    CannotLoadGitHubIssue { issue_id: String, err: String },
-    CannotRunSubshellCommand { command: String, err: String },
-    CommandReturnedInvalidUTF8 { command: String, err: String },
+    CannotCreateBranch {
+        command: String,
+        err: String,
+    },
+    CannotCreateWorkspace {
+        workspace: String,
+        command: String,
+        err: String,
+    },
+    CannotLoadGitHubIssue {
+        issue_id: String,
+        err: String,
+    },
+    CannotRunSubshellCommand {
+        command: String,
+        err: String,
+    },
+    CommandReturnedInvalidUTF8 {
+        command: String,
+        err: String,
+    },
     ConfigFileNotFound(String),
-    ConfigFileInvalidContent { path: String, err: String },
-    InvalidGitHubIssuesHost { host: String, err: String },
+    ConfigFileInvalidContent {
+        path: String,
+        err: String,
+    },
+    InvalidGitHubIssuesHost {
+        host: String,
+        err: String,
+    },
     InvalidTicketID(String),
 }
 
 impl Display for UserError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            UserError::CannotCreateBranch { command, err } => {
+                write!(
+                    f,
+                    "command '{command}' to create a Git branch failed: {err}"
+                )
+            }
+            UserError::CannotCreateWorkspace {
+                workspace,
+                command,
+                err,
+            } => {
+                write!(
+                    f,
+                    "cannot create workspace {workspace} via '{command}': {err}"
+                )
+            }
             UserError::CannotLoadGitHubIssue { issue_id, err } => {
                 write!(f, "cannot load GitHub Issue #{issue_id}: {err}")
             }
