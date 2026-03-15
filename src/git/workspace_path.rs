@@ -1,11 +1,11 @@
-use crate::domain::IssueId;
+use crate::domain::{TicketId, TicketTitle};
 use crate::errors::Result;
 use camino::Utf8PathBuf;
 
 pub fn workspace_path(
     template: &str,
-    issue_id: &IssueId,
-    issue_title: &str,
+    issue_id: &TicketId,
+    issue_title: &TicketTitle,
 ) -> Result<Utf8PathBuf> {
     let path = template
         .replace("{{ticket.id}}", &issue_id.to_string())
@@ -13,8 +13,9 @@ pub fn workspace_path(
     Ok(Utf8PathBuf::from(path))
 }
 
-fn escape(text: &str) -> String {
-    text.to_lowercase()
+fn escape<AS: AsRef<str>>(text: AS) -> String {
+    text.as_ref()
+        .to_lowercase()
         .replace(' ', "-")
         .chars()
         .filter(|c| c.is_ascii_alphanumeric() || *c == '-')
@@ -34,14 +35,14 @@ mod tests {
     }
 
     mod workspace_path {
-        use crate::domain::IssueId;
+        use crate::domain::TicketId;
 
         #[test]
         fn workspace_path() {
             let path = super::super::workspace_path(
                 "{{ticket.id}}-{{ticket.title}}",
-                &IssueId::from("123"),
-                "Test Ticket",
+                &TicketId::from(123),
+                &"Test Ticket".into(),
             )
             .unwrap();
             assert_eq!(path, "123-test-ticket");

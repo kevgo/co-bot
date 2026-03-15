@@ -34,7 +34,9 @@ pub enum UserError {
         host: String,
         err: String,
     },
-    InvalidTicketID(String),
+    InvalidTicketID {
+        id: String,
+    },
 }
 
 impl Display for UserError {
@@ -74,9 +76,9 @@ impl Display for UserError {
             UserError::InvalidGitHubIssuesHost { host, err } => {
                 write!(f, "Invalid hostname for GitHub Issues: {host}\n{err}")
             }
-            UserError::InvalidTicketID(id) => write!(
+            UserError::InvalidTicketID { id } => write!(
                 f,
-                "Invalid ticket ID: {id}\nPlease provide the numerical ticket id or the URL of the ticket",
+                "Invalid ticket ID: {id}\nPlease provide either the numerical id or the URL of the ticket",
             ),
         }
     }

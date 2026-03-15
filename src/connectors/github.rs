@@ -1,4 +1,5 @@
-use crate::connectors::{IssueId, Tracker};
+use crate::connectors::{TicketId, Tracker};
+use crate::domain::{Ticket, TicketTitle};
 use crate::errors::{Result, UserError};
 use big_s::S;
 use roctogen::endpoints::issues;
@@ -25,40 +26,31 @@ pub struct GitHubIssues {
 }
 
 impl Tracker for GitHubIssues {
-    fn load_issue(&self, issue_id: &IssueId) -> Result<String> {
+    fn load_ticket(&self, issue_id: &TicketId) -> Result<Ticket> {
         let issue = issues::new(&self.client)
             .get(&self.owner, &self.repo, issue_id.into())
             .map_err(|err| UserError::CannotLoadGitHubIssue {
                 issue_id: issue_id.to_string(),
                 err: err.to_string(),
             })?;
-        Ok(format_issue(issue))
+        let Some(loaded_id) = issue.id else {
+            return Err(UserError::CannotLoadGitHubIssue {
+                issue_id: issue_id.to_string(),
+                err: format!("issue ({issue_id}) has no id"),
+            });
+        };
+        let Some(loaded_title) = issue.title else {
+            return Err(UserError::CannotLoadGitHubIssue {
+                issue_id: issue_id.to_string(),
+                err: format!("issue ({issue_id}) has no title"),
+            });
+        };
+        Ok(Ticket {
+            id: TicketId::from(loaded_id),
+            title: TicketTitle::from(loaded_title),
+            description: issue.body.unwrap_or_default(),
+        })
     }
-}
-
-fn format_issue(issue: roctogen::models::Issue) -> String {
-    let mut result = String::new();
-    if let Some(title) = &issue.title {
-        result.push_str(title);
-        result.push_str("\n\n");
-    }
-    if let Some(labels) = &issue.labels {
-        let mut found_label = false;
-        for label in labels {
-            if let Some(name) = &label.name {
-                result.push_str(name);
-                result.push(' ');
-                found_label = true;
-            }
-        }
-        if found_label {
-            result.push_str("\n\n");
-        }
-    }
-    if let Some(body) = &issue.body {
-        result.push_str(body);
-    }
-    result
 }
 
 fn parse_github_url(url: &str) -> Result<(String, String)> {
