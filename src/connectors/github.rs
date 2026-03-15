@@ -8,29 +8,26 @@ use roctokit::auth::Auth;
 
 pub fn new(url: &str, token: String) -> Result<GitHubIssues> {
     let (owner, repo) = parse_github_url(url)?;
-    Ok(GitHubIssues { owner, repo, token })
+    let auth = Auth::Token(token);
+    let client = client(&auth).expect("Cannot create new GitHub client");
+    Ok(GitHubIssues {
+        owner,
+        repo,
+        client,
+    })
 }
 
 /// provides access to the issue tracker on github.com
 pub struct GitHubIssues {
     pub owner: String,
     pub repo: String,
-    pub token: String,
-}
-
-impl GitHubIssues {
-    /// provides a GitHub API client instance
-    fn client(&self) -> Client {
-        let auth = Auth::Token(self.token.clone());
-        client(&auth).expect("Cannot create new client")
-    }
+    pub client: Client,
 }
 
 impl Tracker for GitHubIssues {
     fn issue_text(&self, issue_id: &IssueId) -> Result<String> {
         let issue_number = i32::from(issue_id);
-        let client = self.client();
-        let issues = issues::new(&client);
+        let issues = issues::new(&self.client);
         let issue = issues
             .get(&self.owner, &self.repo, issue_number)
             .map_err(|err| UserError::CannotLoadGitHubIssue {
