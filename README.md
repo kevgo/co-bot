@@ -2,78 +2,92 @@
 
 > Ergonomic asynchronous human-AI collaboration
 
-- gives humans time to think
-- gives AI time to think and test hypotheses
-- the most direct path to high-quality AI results
-- the tool to reach for when creating high-quality results that require human
-  guidance and review
+(logo: human and robot high-fiving each other)
 
-Icon: human and robot high-fiving each other
+Co-bot allows you to do sophisticated multi-agent coding workflows using the LLM
+of your choice, on your own hardware. You interact with the LLM through the UI
+of your code forge, similar to how you code review contributions from humans.
 
-## Functionality
+The asynchronous workflow gives you time to think and interact when its
+convenient for you. This reduces multi-tasking pressure when operating multiple
+agent instances. AI gets time to think, test hypotheses, and run tests without
+interrupting human flow.
 
-### Kickoff
+Human review of AI results is a built-in part of the process.
 
-- I run the CLI app on a separate desktop on my computer
-- I tell it to implement a ticket (Jira, GitHub)
-  - it prints all applicable tickets, I select one
-- it clones the Git repo or creates a new Git worktree for the ticket
+## How to use it
+
+### Prepare the codebase
+
+1. human gets the project ready for coding
+   - install all the development dependencies
+   - make sure the tests pass
+2. human adds the co-bot config file to the codebase
+
+### Start the agent
+
+3. human starts the cobot CLI
+   - in a terminal, container, or VM: `cobot run <ticket>` (ticket id or URL)
+4. co-bot creates a new Git worktree for the ticket
+5. co-bot creates a Git branch for the ticket
 
 ### Planning
 
-- the planner agent analyzes the problem and creates an implementation plan
-  - based on the planning instructions for this repo
-  - based on the ticket text
-- it opens a draft PR for this ticket containing an MD file with the
-  implementation plan (`.co-bot/ticket.md`)
-- implementation plan review loop
-  - human adds comments, modifications, and instructions what to change to the
-    file via the forge UI (like a normal code review)
-  - AI implements all suggestions
-  - review loop is done when the human approves the plan, otherwise do another
-    iteration
+6. co-bot creates and commits the implementation plan
+   - by running the planner agent
+   - the planner agent creates the implementation plan
+     - based on the planning instructions for this repo and the ticket text
+7. co-bot creates a draft PR with the implementation plan
+   - `.co-bot/ticket.md`
+8. human reviews the implementation plan via the forge UI
+   - human adds comments and modifications through the forge UI
+     - like a normal code review
+   - co-bot implements all suggestions and pings the human for another review
+     round
+   - planning is done when the human approves the plan
 
 ### Implementation
 
-- coding agent implements the plan
-  - one action item at a time
-  - each action item as a new query
-    - plan as context
-    - summary of existing changes as context
-  - tests first (red/green)
-- documentation agent adds/updates documentation
+9. co-bot implements the planned code changes
+   - each action item as a separate query
+   - red/green TDD
+   - documentation agent adds/updates documentation
+   - commit after each activity
 
 ### Automated review
 
-- review agent reviews the changes and makes comments
-- coding agents implements the feedback
-- review ends when the review agent has no more comments
+10. co-bot performs an automated review of the changes just made
+    - review-agent reviews the changes and makes comments
+    - coding-agent implements the feedback
+    - review ends is finished when the review-agent has no more relevant
+      feedback
 
 ### Human review
 
-- human gets pinged in a comment
-- human reviews the changes
-  - human adds comments, modifications, and instructions what to change to the
-    file
-  - it implements the instructions
-  - it performs another automated review loop
-  - loop ends when the human merges the PR
+11. co-bot pings the human in the PR to review the code
+12. human reviews the changes
+    - adds comments, modifications, and instructions what to change via the
+      forge UI (like a normal code review)
+    - runs another "improve this yourself" command
+      - this triggers another automated review round
+    - coding-agent implements all suggestions
+    - review-agent performs an automated review to verify that the changes just
+      implemented address the given feedback
+    - co-bot pings the human for another review round
+    - review is done when the human merges the PR
 
 ### Finalize
 
-- it comments with statistics on the PR
-  - time and money spent
-- it removes the local Git branch and worktree
+13. co-bot adds a PR comment with statistics
+    - time and money spent
+
+14. co-bot cleans up the Git workspace
+    - removes the local Git branch
+    - removes the worktree
+    - exits
 
 ## How it works
 
-- CLI app written in Rust
-- I run the CLI app (one or many instances) in a separate desktops on my
-  computer (to use my capable computer for AI development), in a local
-  VM/Docker, or on a cloud VM
-- it runs headless, I interact with it through the web UI of my code forge
-  - similar to how I interact with human code contributors
-- `ai-team init` creates the config and prompt files
 - receives updates from the forge by polling the forge API
 
 Config file:
@@ -95,7 +109,7 @@ bot-token-env-var = "GITHUB_TOKEN"  # name of the env var from which to read the
 [coding]
 llm-cli = "wibey -p '{prompt}'"  # placeholder for the prompt
 timeout = "1h"                   # abort and reach out to the human if the coding takes longer than 1h
-after-code = "make test"         # code snippet to run after 
+after-code = "make test"         # code snippet to run after
 
 [phases.plan]
 model = "opus"
