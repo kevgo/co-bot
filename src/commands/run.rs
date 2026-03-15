@@ -11,11 +11,15 @@ pub fn run(issue: IssueIdOrUrl, verbose: bool) -> Result<ExitCode> {
         println!("Tracker token: {}", tracker_token);
     }
     let tracker = connectors::load_tracker(&config.tracker, tracker_token)?;
-    println!(
-        "Tracker: {} ({})",
-        config.tracker.tracker_type, config.tracker.url
-    );
+    if verbose {
+        println!(
+            "Tracker: {} ({})",
+            config.tracker.tracker_type, config.tracker.url
+        );
+    }
     let issue_text = tracker.issue_text(&issue_id)?;
-    println!("Ticket #{}: {}", issue_id, issue_text);
+    if verbose {
+        println!("Ticket #{}: {}", issue_id, issue_text);
+    }
     Ok(ExitCode::SUCCESS)
 }
