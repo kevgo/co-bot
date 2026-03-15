@@ -45,7 +45,8 @@ implement a ticket.
      - based on the planning instructions for this repo and the ticket text
    - co-bot reviews the implementation plan internally
 7. co-bot creates a draft PR with the implementation plan
-   - `.co-bot/ticket.md`
+   - `.co-bot/plan.md`
+   - this file will be removed when the ticket is done
 8. human reviews the implementation plan via the forge UI
    - human adds comments and modifications through the forge UI
      - like a normal code review
