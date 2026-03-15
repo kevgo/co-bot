@@ -25,6 +25,41 @@ impl GitHubIssues {
     }
 }
 
+impl Tracker for GitHubIssues {
+    fn issue_text(&self, issue_id: &IssueId) -> Result<String> {
+        let issue_number = i32::from(issue_id);
+        let client = self.client();
+        let issues = issues::new(&client);
+        let issue = issues
+            .get(&self.owner, &self.repo, issue_number)
+            .map_err(|err| UserError::CannotLoadGitHubIssue {
+                issue_id: issue_id.to_string(),
+                err: err.to_string(),
+            })?;
+        Ok(format_issue(issue))
+    }
+}
+
+fn format_issue(issue: roctogen::models::Issue) -> String {
+    let mut parts = Vec::new();
+    if let Some(title) = &issue.title {
+        parts.push(format!("Title: {title}"));
+    }
+    if let Some(state) = &issue.state {
+        parts.push(format!("State: {state}"));
+    }
+    if let Some(labels) = &issue.labels {
+        let label_names: Vec<&str> = labels.iter().filter_map(|l| l.name.as_deref()).collect();
+        if !label_names.is_empty() {
+            parts.push(format!("Labels: {}", label_names.join(", ")));
+        }
+    }
+    if let Some(body) = &issue.body {
+        parts.push(format!("\n{body}"));
+    }
+    parts.join("\n")
+}
+
 fn parse_github_url(url: &str) -> Result<(String, String)> {
     // example url: https://github.com/owner/repo/issues
     let mut parts = url.split('/');
@@ -89,41 +124,6 @@ fn parse_github_url(url: &str) -> Result<(String, String)> {
         });
     }
     Ok((owner.into(), repo.into()))
-}
-
-impl Tracker for GitHubIssues {
-    fn issue_text(&self, issue_id: &IssueId) -> Result<String> {
-        let issue_number = i32::from(issue_id);
-        let client = self.client();
-        let issues = issues::new(&client);
-        let issue = issues
-            .get(&self.owner, &self.repo, issue_number)
-            .map_err(|err| UserError::CannotLoadGitHubIssue {
-                issue_id: issue_id.to_string(),
-                err: err.to_string(),
-            })?;
-        Ok(format_issue(issue))
-    }
-}
-
-fn format_issue(issue: roctogen::models::Issue) -> String {
-    let mut parts = Vec::new();
-    if let Some(title) = &issue.title {
-        parts.push(format!("Title: {title}"));
-    }
-    if let Some(state) = &issue.state {
-        parts.push(format!("State: {state}"));
-    }
-    if let Some(labels) = &issue.labels {
-        let label_names: Vec<&str> = labels.iter().filter_map(|l| l.name.as_deref()).collect();
-        if !label_names.is_empty() {
-            parts.push(format!("Labels: {}", label_names.join(", ")));
-        }
-    }
-    if let Some(body) = &issue.body {
-        parts.push(format!("\n{body}"));
-    }
-    parts.join("\n")
 }
 
 #[cfg(test)]
