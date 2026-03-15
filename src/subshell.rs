@@ -10,8 +10,10 @@ pub fn run(command: &str) -> Result<String> {
             command: command.to_string(),
             err: err.to_string(),
         })?;
-    String::from_utf8(output.stdout).map_err(|err| UserError::CommandReturnedInvalidUTF8 {
-        command: command.to_string(),
-        err: err.to_string(),
-    })
+    let text =
+        String::from_utf8(output.stdout).map_err(|err| UserError::CommandReturnedInvalidUTF8 {
+            command: command.to_string(),
+            err: err.to_string(),
+        })?;
+    Ok(text.trim().to_string())
 }
