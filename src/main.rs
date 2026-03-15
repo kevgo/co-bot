@@ -24,6 +24,6 @@ fn main() -> ExitCode {
 fn inner() -> Result<ExitCode> {
     let args = cli::Args::parse();
     match args.command {
-        Command::Run { ticket } => commands::run(ticket),
+        Command::Run { ticket } => commands::run(ticket, args.verbose),
     }
 }

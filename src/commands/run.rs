@@ -3,11 +3,13 @@ use crate::errors::Result;
 use crate::{config, connectors, subshell};
 use std::process::ExitCode;
 
-pub fn run(issue: IssueIdOrUrl) -> Result<ExitCode> {
+pub fn run(issue: IssueIdOrUrl, verbose: bool) -> Result<ExitCode> {
     let issue_id = issue.id()?;
     let config = config::load()?;
     let tracker_token = subshell::run(&config.tracker.token_source)?;
-    println!("Tracker token: {}", tracker_token);
+    if verbose {
+        println!("Tracker token: {}", tracker_token);
+    }
     let tracker = connectors::load_tracker(&config.tracker, tracker_token)?;
     println!(
         "Tracker: {} ({})",

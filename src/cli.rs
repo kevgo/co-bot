@@ -4,6 +4,10 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Args {
+    /// enable verbose output
+    #[arg(short, long, global = true)]
+    pub verbose: bool,
+
     /// the command to run
     #[clap(subcommand)]
     pub command: Command,
