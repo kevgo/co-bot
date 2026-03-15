@@ -25,9 +25,12 @@ pub fn run(issue: TicketIdOrUrl, verbose: bool) -> Result<ExitCode> {
 
     // create Git workspace and branch
     let workspace_path = git::workspace_path(&config.git.workspace_path, &issue_id, &ticket.title)?;
+    log!(logger, "Workspace path: {}", workspace_path);
     let workspace = Workspace::from(workspace_path);
     git::create_workspace(&config.git.create_workspace, &workspace)?;
+    log!(logger, "branch: {}", workspace);
     git::create_branch(&config.git.create_branch, &workspace)?;
+    log!(logger, "Created branch: {}", workspace);
 
     // run the code generator
     let _query = ticket.to_query();
