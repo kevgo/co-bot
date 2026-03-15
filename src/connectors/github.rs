@@ -25,7 +25,7 @@ pub struct GitHubIssues {
 }
 
 impl Tracker for GitHubIssues {
-    fn issue_text(&self, issue_id: &IssueId) -> Result<String> {
+    fn load_issue(&self, issue_id: &IssueId) -> Result<String> {
         let issue = issues::new(&self.client)
             .get(&self.owner, &self.repo, issue_id.into())
             .map_err(|err| UserError::CannotLoadGitHubIssue {

@@ -18,7 +18,7 @@ pub fn run(issue: IssueIdOrUrl, verbose: bool) -> Result<ExitCode> {
             config.tracker.tracker_type, config.tracker.url
         );
     }
-    let issue_text = tracker.issue_text(&issue_id)?;
+    let issue_text = tracker.load_issue(&issue_id)?;
     if verbose {
         println!("Ticket #{}: {}", issue_id, issue_text);
     }

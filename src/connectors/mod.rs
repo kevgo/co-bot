@@ -6,7 +6,7 @@ use crate::errors::Result;
 /// Trackers store tickets to implement
 pub trait Tracker {
     /// provides an AI-friendly text serialization of the issue with the given id
-    fn issue_text(&self, issue: &IssueId) -> Result<String>;
+    fn load_issue(&self, issue: &IssueId) -> Result<String>;
 }
 
 pub fn load_tracker(config: &config::Tracker, tracker_token: String) -> Result<Box<dyn Tracker>> {
