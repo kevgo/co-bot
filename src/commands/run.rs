@@ -1,4 +1,4 @@
-use crate::connectors::IssueIdOrUrl;
+use crate::domain::IssueIdOrUrl;
 use crate::errors::Result;
 use crate::{config, connectors};
 use std::process::ExitCode;

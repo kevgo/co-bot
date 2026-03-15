@@ -2,6 +2,7 @@ mod cli;
 mod commands;
 mod config;
 mod connectors;
+mod domain;
 mod errors;
 
 use crate::cli::Command;
