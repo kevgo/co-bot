@@ -15,13 +15,19 @@ interrupting human flow.
 
 Human review of AI results is a built-in part of the process.
 
+All essential web interaction happen through non-AI codepaths. The AI can run
+locally, reducing the risk of prompt injection and information exfiltration.
+
 ## How to use it
+
+The co-bot workflow demonstrates how the human user and co-bot work together to
+implement a ticket.
 
 ### Prepare the codebase
 
-1. human gets the project ready for coding
+1. human gets the codebase ready for coding on their machine
    - install all the development dependencies
-   - make sure the tests pass
+   - run the tests to make sure they pass
 2. human adds the co-bot config file to the codebase
 
 ### Start the agent
@@ -33,10 +39,11 @@ Human review of AI results is a built-in part of the process.
 
 ### Planning
 
-6. co-bot creates and commits the implementation plan
+6. co-bot creates the implementation plan
    - by running the planner agent
    - the planner agent creates the implementation plan
      - based on the planning instructions for this repo and the ticket text
+   - co-bot reviews the implementation plan internally
 7. co-bot creates a draft PR with the implementation plan
    - `.co-bot/ticket.md`
 8. human reviews the implementation plan via the forge UI
