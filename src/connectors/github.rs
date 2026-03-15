@@ -37,23 +37,28 @@ impl Tracker for GitHubIssues {
 }
 
 fn format_issue(issue: roctogen::models::Issue) -> String {
-    let mut parts = Vec::new();
+    let mut result = String::new();
     if let Some(title) = &issue.title {
-        parts.push(format!("Title: {title}"));
-    }
-    if let Some(state) = &issue.state {
-        parts.push(format!("State: {state}"));
+        result.push_str(title);
+        result.push_str("\n\n");
     }
     if let Some(labels) = &issue.labels {
-        let label_names: Vec<&str> = labels.iter().filter_map(|l| l.name.as_deref()).collect();
-        if !label_names.is_empty() {
-            parts.push(format!("Labels: {}", label_names.join(", ")));
+        let mut found_label = false;
+        for label in labels {
+            if let Some(name) = label.name.as_deref() {
+                result.push_str(name);
+                result.push_str(" ");
+                found_label = true;
+            }
+        }
+        if found_label {
+            result.push_str("\n\n");
         }
     }
     if let Some(body) = &issue.body {
-        parts.push(format!("\n{body}"));
+        result.push_str(body);
     }
-    parts.join("\n")
+    result
 }
 
 fn parse_github_url(url: &str) -> Result<(String, String)> {
