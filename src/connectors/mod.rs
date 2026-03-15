@@ -1,6 +1,6 @@
 mod github;
 
-use crate::config::{Config, TrackerType};
+use crate::config::{self, TrackerType};
 use crate::domain::IssueId;
 use crate::errors::Result;
 /// Trackers store tickets to implement
@@ -9,8 +9,8 @@ pub trait Tracker {
     fn issue_text(&self, issue: &IssueId) -> Result<String>;
 }
 
-pub fn get_tracker(config: &Config) -> Result<Box<dyn Tracker>> {
-    match config.tracker.tracker_type {
-        TrackerType::GitHub => Ok(Box::new(github::new(&config.tracker.url)?)),
+pub fn load_tracker(config: &config::Tracker) -> Result<Box<dyn Tracker>> {
+    match config.tracker_type {
+        TrackerType::GitHub => Ok(Box::new(github::new(&config.url)?)),
     }
 }

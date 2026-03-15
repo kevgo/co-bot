@@ -1,3 +1,5 @@
+//! This module loads the low-level configuration data from the config file.
+
 use crate::errors::{Result, UserError};
 use serde::Deserialize;
 use std::fmt::Display;
