@@ -45,7 +45,7 @@ fn format_issue(issue: roctogen::models::Issue) -> String {
     if let Some(labels) = &issue.labels {
         let mut found_label = false;
         for label in labels {
-            if let Some(name) = label.name.as_deref() {
+            if let Some(name) = &label.name {
                 result.push_str(name);
                 result.push_str(" ");
                 found_label = true;
@@ -62,7 +62,6 @@ fn format_issue(issue: roctogen::models::Issue) -> String {
 }
 
 fn parse_github_url(url: &str) -> Result<(String, String)> {
-    // example url: https://github.com/owner/repo/issues
     let mut parts = url.split('/');
     let Some(protocol) = parts.next() else {
         return Err(UserError::InvalidGitHubIssuesHost {
