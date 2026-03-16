@@ -8,6 +8,5 @@ pub fn create_branch(template: &str, workspace: &Workspace) -> Result<()> {
         command: command.to_string(),
         err: err.to_string(),
     })?;
-    println!("1111111111111111111111111111111111111111111111");
     Ok(())
 }
