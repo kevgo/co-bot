@@ -17,7 +17,7 @@ fn main() -> ExitCode {
     match inner() {
         Ok(exit_code) => exit_code,
         Err(err) => {
-            eprintln!("Error: {err}");
+            eprintln!("\nError: {err}");
             ExitCode::FAILURE
         }
     }
