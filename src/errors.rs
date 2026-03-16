@@ -73,7 +73,7 @@ impl Display for UserError {
             } => {
                 write!(
                     f,
-                    "command '{command}' returned exit code {exit_code}:\n{output}"
+                    "command '{command}' returned exit code {exit_code}:\n\n{output}"
                 )
             }
             UserError::CannotRunSubshellCommand { command, err } => {
