@@ -15,5 +15,11 @@ pub fn run(command: &str) -> Result<String> {
             command: command.to_string(),
             err: err.to_string(),
         })?;
+    if !output.status.success() {
+        return Err(UserError::CommandReturnedNonZeroExitCode {
+            command: command.to_string(),
+            exit_code: output.status.code().unwrap_or(1),
+        });
+    }
     Ok(text.trim().to_string())
 }

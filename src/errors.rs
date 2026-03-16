@@ -21,6 +21,10 @@ pub enum UserError {
         command: String,
         err: String,
     },
+    CommandReturnedNonZeroExitCode {
+        command: String,
+        exit_code: i32,
+    },
     CommandReturnedInvalidUTF8 {
         command: String,
         err: String,
@@ -60,6 +64,9 @@ impl Display for UserError {
             }
             UserError::CannotLoadGitHubIssue { issue_id, err } => {
                 write!(f, "cannot load GitHub Issue #{issue_id}: {err}")
+            }
+            UserError::CommandReturnedNonZeroExitCode { command, exit_code } => {
+                write!(f, "command '{command}' returned exit code {exit_code}")
             }
             UserError::CannotRunSubshellCommand { command, err } => {
                 write!(f, "cannot run subshell command '{command}': {err}")
