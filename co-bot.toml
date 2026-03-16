@@ -5,15 +5,19 @@ human = "kevgo"
 token-source = "git config git-town.github-token"  # shell script that prints the tracker token
 
 [git]
+
+# name of the Git branch to create
+branch-name = "{{ticket.id}}-{{ticket.title}}"
+
 # how to calculate the directory that contains the Git workspace for the ticket
 # can be an absolute path, or relative to the directory in which co-bot runs
-workspace-path = "../{{ticket.id}}-{{ticket.title}}"
+workspace-path = "../{{branch-name}}"
 
 # shell command to create the Git workspace
 create-workspace = "git worktree add ../{{workspace}}"
 
 # shell command to create a Git branch for the ticket
-create-branch = "git town hack {{workspace}}"
+create-branch = "git town hack {{branch-name}}"
 
 # shell command to commit the changes that the AI created
 commit-message = "{{ticket.title}} part {{iteration}}"
