@@ -2,7 +2,7 @@ use crate::domain::TicketIdOrUrl;
 use crate::errors::Result;
 use crate::git::Workspace;
 use crate::logger::Logger;
-use crate::{config, connectors, git, log, subshell};
+use crate::{config, git, log};
 use std::process::ExitCode;
 
 pub fn run(issue: TicketIdOrUrl, verbose: bool) -> Result<ExitCode> {
@@ -11,30 +11,28 @@ pub fn run(issue: TicketIdOrUrl, verbose: bool) -> Result<ExitCode> {
     // load issue
     let issue_id = issue.id()?;
     let config = config::load()?;
-    let tracker_token = subshell::run(&config.tracker.token_source)?;
+    let tracker_token = config.load_tracker_token()?;
     log!(logger, "Tracker token: {}", tracker_token);
-    let tracker = connectors::load_tracker(&config.tracker, tracker_token)?;
+    let tracker = config.load_tracker(tracker_token)?;
     log!(
         logger,
         "Tracker: {} ({})",
-        config.tracker.tracker_type,
-        config.tracker.url
+        config.data.tracker.tracker_type,
+        config.data.tracker.url
     );
     let ticket = tracker.load_ticket(&issue_id)?;
     log!(logger, "Ticket #{}: {}", issue_id, ticket);
 
     // create Git workspace and branch
-    let branch_name = config
-        .git
-        .branch_name
-        .replace("{{ticket.id}}", &issue_id.to_string())
-        .replace("{{ticket.title}}", &ticket.title.to_string());
-    let workspace_path = git::workspace_path(&config.git.workspace_path, &issue_id, &ticket.title)?;
+    let branch_name = config.branch_name(&ticket);
+
+    let workspace_path =
+        git::workspace_path(&config.data.git.workspace_path, &issue_id, &ticket.title)?;
     log!(logger, "Workspace path: {}", workspace_path);
     let workspace = Workspace::from(workspace_path);
-    git::create_branch(&config.git.create_branch, &branch_name)?;
+    git::create_branch(&config.data.git.create_branch, &branch_name)?;
     log!(logger, "Created branch: {}", workspace);
-    git::create_workspace(&config.git.create_workspace, &workspace)?;
+    git::create_workspace(&config.data.git.create_workspace, &workspace)?;
     log!(logger, "branch: {}", workspace);
 
     // run the code generator

@@ -6,7 +6,7 @@ use std::fmt::Display;
 
 const FILE_NAME: &str = "co-bot.toml";
 
-pub fn load() -> Result<Config> {
+pub fn load() -> Result<Data> {
     let Ok(content) = std::fs::read_to_string(FILE_NAME) else {
         return Err(UserError::ConfigFileNotFound(FILE_NAME.to_string()));
     };
@@ -18,7 +18,7 @@ pub fn load() -> Result<Config> {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "kebab-case")]
-pub struct Config {
+pub struct Data {
     pub tracker: Tracker,
     pub git: Git,
 }
@@ -54,7 +54,7 @@ impl Display for TrackerType {
     }
 }
 
-impl TryFrom<&str> for Config {
+impl TryFrom<&str> for Data {
     type Error = UserError;
 
     fn try_from(text: &str) -> Result<Self> {
@@ -76,6 +76,7 @@ url = "https://github.com/kevgo/co-bot/issues"
 token-source = "git config git-town.github-token"
 
 [git]
+branch-name = "{{ticket.id}}-{{ticket.title}}"
 workspace-path = "../{{ticket.id}}-{{ticket.title}}"
 create-workspace = "git worktree add ../{{workspace}}"
 create-branch = "git town hack {{workspace}}"
@@ -83,7 +84,7 @@ create-branch = "git town hack {{workspace}}"
 
     #[test]
     fn parse_full_config() {
-        let config = Config::try_from(TOML_CONTENT).unwrap();
+        let config = Data::try_from(TOML_CONTENT).unwrap();
 
         // tracker
         assert_eq!(config.tracker.tracker_type, TrackerType::GitHub);
