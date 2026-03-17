@@ -40,7 +40,7 @@ implement a ticket.
 ### Planning
 
 6. co-bot creates the implementation plan
-   - by running the planner agent
+   - run the planner agent
    - the planner agent creates the implementation plan
      - based on the planning instructions for this repo and the ticket text
    - co-bot reviews the implementation plan internally
@@ -48,18 +48,18 @@ implement a ticket.
    - `.co-bot/plan.md`
    - this file will be removed when the ticket is done
 8. human reviews the implementation plan via the forge UI
-   - human adds comments and modifications through the forge UI
-     - like a normal code review
-   - co-bot implements all suggestions and pings the human for another review
-     round
-   - planning is done when the human approves the plan
+   - add comments and modifications through the forge UI (like a normal code
+     review), or edit the plan in their own editor and commit changes
+   - co-bot detects and pulls the new commits, implements all suggestions, and
+     pings the human for another review
+   - planning is done when the human approves the plan ("/approve")
 
 ### Implementation
 
 9. co-bot implements the planned code changes
-   - each action item as a separate query
+   - each TODO as a separate query
    - red/green TDD
-   - documentation agent adds/updates documentation
+   - documentation agent updates documentation
    - commit after each activity
 
 ### Automated review
