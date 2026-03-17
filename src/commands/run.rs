@@ -1,6 +1,5 @@
 use crate::domain::TicketIdOrUrl;
 use crate::errors::Result;
-use crate::git::Workspace;
 use crate::logger::Logger;
 use crate::{config, git, log};
 use std::process::ExitCode;
@@ -26,13 +25,11 @@ pub fn run(issue: TicketIdOrUrl, verbose: bool) -> Result<ExitCode> {
     // create Git workspace and branch
     let branch_name = config.branch_name(&ticket);
 
-    let workspace_path = config.workspace_path(&ticket)?;
-    log!(logger, "Workspace path: {}", workspace_path);
-    let workspace = Workspace::from(workspace_path);
     git::create_branch(&config.file.git.create_branch, &branch_name)?;
-    log!(logger, "Created branch: {}", workspace);
+    log!(logger, "Created branch: {}", branch_name);
+    let workspace = config.workspace_path(&ticket)?;
     git::create_workspace(&config.file.git.create_workspace, &workspace)?;
-    log!(logger, "branch: {}", workspace);
+    log!(logger, "Created workspace: {}", workspace);
 
     // run the code generator
     let _query = ticket.to_query();

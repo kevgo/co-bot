@@ -1,13 +1,12 @@
 //! This module provides high-level configuration data.
 
-use camino::Utf8PathBuf;
-
 use crate::config::File;
 use crate::config::file::TrackerType;
 use crate::connectors::Tracker;
 use crate::connectors::github;
 use crate::domain::Ticket;
 use crate::errors::Result;
+use crate::git::Workspace;
 use crate::subshell;
 
 /// high-level configuration data as it is used by the application
@@ -37,14 +36,14 @@ impl Data {
         }
     }
 
-    pub fn workspace_path(&self, ticket: &Ticket) -> Result<Utf8PathBuf> {
+    pub fn workspace_path(&self, ticket: &Ticket) -> Result<Workspace> {
         let path = self
             .file
             .git
             .workspace_path
             .replace("{{ticket.id}}", &ticket.id.to_string())
             .replace("{{ticket.title}}", &escape(ticket.title.as_ref()));
-        Ok(Utf8PathBuf::from(path))
+        Ok(Workspace::from(path))
     }
 }
 
@@ -70,11 +69,11 @@ mod tests {
     }
 
     mod workspace_path {
-        use camino::Utf8PathBuf;
 
         use crate::config::file::Git;
         use crate::config::{Data, File};
         use crate::domain::{Ticket, TicketId};
+        use crate::git::Workspace;
 
         #[test]
         fn workspace_path() {
@@ -93,7 +92,7 @@ mod tests {
                 ..Default::default()
             };
             let have = config.workspace_path(&ticket).unwrap();
-            let want = Utf8PathBuf::from("123-test-ticket");
+            let want = Workspace::from("123-test-ticket");
             assert_eq!(have, want);
         }
     }

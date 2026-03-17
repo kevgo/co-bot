@@ -1,7 +1,8 @@
-use camino::Utf8PathBuf;
+use camino::{Utf8Path, Utf8PathBuf};
 use std::fmt::Display;
 
 /// a Git workspace
+#[derive(Debug, Default, Eq, PartialEq)]
 pub struct Workspace(Utf8PathBuf);
 
 impl Display for Workspace {
@@ -10,14 +11,20 @@ impl Display for Workspace {
     }
 }
 
-impl AsRef<Utf8PathBuf> for Workspace {
-    fn as_ref(&self) -> &Utf8PathBuf {
+impl AsRef<Utf8Path> for Workspace {
+    fn as_ref(&self) -> &Utf8Path {
         &self.0
     }
 }
 
-impl From<Utf8PathBuf> for Workspace {
-    fn from(path: Utf8PathBuf) -> Self {
-        Self(path)
+impl From<&str> for Workspace {
+    fn from(path: &str) -> Self {
+        Self(Utf8PathBuf::from(path.to_string()))
+    }
+}
+
+impl From<String> for Workspace {
+    fn from(path: String) -> Self {
+        Self(Utf8PathBuf::from(path))
     }
 }
