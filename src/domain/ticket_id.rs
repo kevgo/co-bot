@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 /// numerical identifier of a ticket
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Default, Eq, PartialEq)]
 pub struct TicketId(i64);
 
 impl Display for TicketId {

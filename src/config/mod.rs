@@ -1,7 +1,7 @@
-mod config;
 mod data;
+mod file;
 mod load;
 
-pub use config::Config;
-pub use data::Data;
+pub use data::Config;
+pub use file::File;
 pub use load::load;

@@ -2,6 +2,7 @@ use std::fmt::Display;
 
 use crate::domain::{TicketId, TicketTitle};
 
+#[derive(Debug, Default)]
 pub struct Ticket {
     pub id: TicketId,
     pub title: TicketTitle,

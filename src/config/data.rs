@@ -1,100 +1,99 @@
-//! This module loads the low-level configuration data from the config file.
+//! This module provides high-level configuration data.
 
-use crate::errors::{Result, UserError};
-use serde::Deserialize;
-use std::fmt::Display;
+use camino::Utf8PathBuf;
 
-const FILE_NAME: &str = "co-bot.toml";
+use crate::config::File;
+use crate::config::file::TrackerType;
+use crate::connectors::Tracker;
+use crate::connectors::github;
+use crate::domain::Ticket;
+use crate::errors::Result;
+use crate::subshell;
 
-pub fn load() -> Result<Data> {
-    let Ok(content) = std::fs::read_to_string(FILE_NAME) else {
-        return Err(UserError::ConfigFileNotFound(FILE_NAME.to_string()));
-    };
-    toml::from_str(&content).map_err(|err| UserError::ConfigFileInvalidContent {
-        path: FILE_NAME.to_string(),
-        err: err.to_string(),
-    })
+pub struct Config {
+    pub data: File,
 }
 
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "kebab-case")]
-pub struct Data {
-    pub tracker: Tracker,
-    pub git: Git,
-}
+impl Config {
+    pub fn branch_name(&self, ticket: &Ticket) -> String {
+        self.data
+            .git
+            .branch_name
+            .replace("{{ticket.id}}", &ticket.id.to_string())
+            .replace("{{ticket.title}}", ticket.title.as_ref())
+    }
 
-#[derive(Debug, Deserialize)]
-pub struct Tracker {
-    #[serde(rename = "type")]
-    pub tracker_type: TrackerType,
-    pub url: String,
-    #[serde(rename = "token-source")]
-    pub token_source: String,
-}
+    pub fn load_tracker_token(&self) -> Result<String> {
+        subshell::run(&self.data.tracker.token_source)
+    }
 
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "kebab-case")]
-pub struct Git {
-    pub branch_name: String,
-    pub workspace_path: String,
-    pub create_workspace: String,
-    pub create_branch: String,
-}
-
-#[derive(Debug, Deserialize, Eq, PartialEq)]
-pub enum TrackerType {
-    GitHub,
-}
-
-impl Display for TrackerType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            TrackerType::GitHub => write!(f, "GitHub Issues"),
+    pub fn load_tracker(&self, tracker_token: String) -> Result<Box<dyn Tracker>> {
+        match self.data.tracker.tracker_type {
+            TrackerType::GitHub => Ok(Box::new(github::new(
+                &self.data.tracker.url,
+                tracker_token,
+            )?)),
         }
     }
+
+    pub fn workspace_path(&self, ticket: &Ticket) -> Result<Utf8PathBuf> {
+        let path = self
+            .data
+            .git
+            .workspace_path
+            .replace("{{ticket.id}}", &ticket.id.to_string())
+            .replace("{{ticket.title}}", &escape(ticket.title.as_ref()));
+        Ok(Utf8PathBuf::from(path))
+    }
 }
 
-impl TryFrom<&str> for Data {
-    type Error = UserError;
-
-    fn try_from(text: &str) -> Result<Self> {
-        toml::from_str(text).map_err(|err| UserError::ConfigFileInvalidContent {
-            path: FILE_NAME.to_string(),
-            err: err.to_string(),
-        })
-    }
+fn escape<AS: AsRef<str>>(text: AS) -> String {
+    text.as_ref()
+        .to_lowercase()
+        .replace(' ', "-")
+        .chars()
+        .filter(|c| c.is_ascii_alphanumeric() || *c == '-')
+        .collect()
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
 
-    const TOML_CONTENT: &str = r#"
-[tracker]
-type = "GitHub"
-url = "https://github.com/kevgo/co-bot/issues"
-token-source = "git config git-town.github-token"
-
-[git]
-branch-name = "{{ticket.id}}-{{ticket.title}}"
-workspace-path = "../{{ticket.id}}-{{ticket.title}}"
-create-workspace = "git worktree add ../{{workspace}}"
-create-branch = "git town hack {{workspace}}"
-"#;
-
-    #[test]
-    fn parse_full_config() {
-        let config = Data::try_from(TOML_CONTENT).unwrap();
-
-        // tracker
-        assert_eq!(config.tracker.tracker_type, TrackerType::GitHub);
-        assert_eq!(config.tracker.url, "https://github.com/kevgo/co-bot/issues");
+    mod escape {
+        #[test]
+        fn text() {
+            let give = "Hello World!";
+            let have = super::super::escape(give);
+            assert_eq!(have, "hello-world");
+        }
     }
 
-    #[test]
-    fn load_from_file() {
-        let config = super::load().unwrap();
-        assert_eq!(config.tracker.tracker_type, TrackerType::GitHub);
-        assert_eq!(config.tracker.url, "https://github.com/kevgo/co-bot/issues");
+    mod workspace_path {
+        use camino::Utf8PathBuf;
+
+        use crate::config::file::Git;
+        use crate::config::{Config, File};
+        use crate::domain::{Ticket, TicketId};
+
+        #[test]
+        fn workspace_path() {
+            let config = Config {
+                data: File {
+                    git: Git {
+                        workspace_path: "{{ticket.id}}-{{ticket.title}}".to_string(),
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+            };
+            let ticket = Ticket {
+                id: TicketId::from(123),
+                title: "Test Ticket".into(),
+                ..Default::default()
+            };
+            let have = config.workspace_path(&ticket).unwrap();
+            let want = Utf8PathBuf::from("123-test-ticket");
+            assert_eq!(have, want);
+        }
     }
 }

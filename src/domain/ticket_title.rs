@@ -1,6 +1,7 @@
 use std::fmt::Display;
 
 /// the title of a ticket
+#[derive(Debug, Default)]
 pub struct TicketTitle(String);
 
 impl AsRef<str> for TicketTitle {

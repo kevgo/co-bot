@@ -26,8 +26,7 @@ pub fn run(issue: TicketIdOrUrl, verbose: bool) -> Result<ExitCode> {
     // create Git workspace and branch
     let branch_name = config.branch_name(&ticket);
 
-    let workspace_path =
-        git::workspace_path(&config.data.git.workspace_path, &issue_id, &ticket.title)?;
+    let workspace_path = config.workspace_path(&ticket)?;
     log!(logger, "Workspace path: {}", workspace_path);
     let workspace = Workspace::from(workspace_path);
     git::create_branch(&config.data.git.create_branch, &branch_name)?;
