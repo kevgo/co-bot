@@ -17,8 +17,8 @@ pub fn run(issue: TicketIdOrUrl, verbose: bool) -> Result<ExitCode> {
     log!(
         logger,
         "Tracker: {} ({})",
-        config.data.tracker.tracker_type,
-        config.data.tracker.url
+        config.file.tracker.tracker_type,
+        config.file.tracker.url
     );
     let ticket = tracker.load_ticket(&issue_id)?;
     log!(logger, "Ticket #{}: {}", issue_id, ticket);
@@ -29,9 +29,9 @@ pub fn run(issue: TicketIdOrUrl, verbose: bool) -> Result<ExitCode> {
     let workspace_path = config.workspace_path(&ticket)?;
     log!(logger, "Workspace path: {}", workspace_path);
     let workspace = Workspace::from(workspace_path);
-    git::create_branch(&config.data.git.create_branch, &branch_name)?;
+    git::create_branch(&config.file.git.create_branch, &branch_name)?;
     log!(logger, "Created branch: {}", workspace);
-    git::create_workspace(&config.data.git.create_workspace, &workspace)?;
+    git::create_workspace(&config.file.git.create_workspace, &workspace)?;
     log!(logger, "branch: {}", workspace);
 
     // run the code generator

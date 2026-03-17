@@ -10,13 +10,13 @@ use crate::domain::Ticket;
 use crate::errors::Result;
 use crate::subshell;
 
-pub struct Config {
-    pub data: File,
+pub struct Data {
+    pub file: File,
 }
 
-impl Config {
+impl Data {
     pub fn branch_name(&self, ticket: &Ticket) -> String {
-        self.data
+        self.file
             .git
             .branch_name
             .replace("{{ticket.id}}", &ticket.id.to_string())
@@ -24,13 +24,13 @@ impl Config {
     }
 
     pub fn load_tracker_token(&self) -> Result<String> {
-        subshell::run(&self.data.tracker.token_source)
+        subshell::run(&self.file.tracker.token_source)
     }
 
     pub fn load_tracker(&self, tracker_token: String) -> Result<Box<dyn Tracker>> {
-        match self.data.tracker.tracker_type {
+        match self.file.tracker.tracker_type {
             TrackerType::GitHub => Ok(Box::new(github::new(
-                &self.data.tracker.url,
+                &self.file.tracker.url,
                 tracker_token,
             )?)),
         }
@@ -38,7 +38,7 @@ impl Config {
 
     pub fn workspace_path(&self, ticket: &Ticket) -> Result<Utf8PathBuf> {
         let path = self
-            .data
+            .file
             .git
             .workspace_path
             .replace("{{ticket.id}}", &ticket.id.to_string())
@@ -72,13 +72,13 @@ mod tests {
         use camino::Utf8PathBuf;
 
         use crate::config::file::Git;
-        use crate::config::{Config, File};
+        use crate::config::{Data, File};
         use crate::domain::{Ticket, TicketId};
 
         #[test]
         fn workspace_path() {
-            let config = Config {
-                data: File {
+            let config = Data {
+                file: File {
                     git: Git {
                         workspace_path: "{{ticket.id}}-{{ticket.title}}".to_string(),
                         ..Default::default()
