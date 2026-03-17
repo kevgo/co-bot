@@ -1,9 +1,8 @@
 use crate::errors::{Result, UserError};
-use crate::git::Workspace;
 use crate::subshell;
 
-pub fn create_branch(template: &str, workspace: &Workspace) -> Result<()> {
-    let command = template.replace("{{workspace}}", workspace.as_ref().as_str());
+pub fn create_branch(template: &str, name: &str) -> Result<()> {
+    let command = template.replace("{{workspace}}", name);
     subshell::run(&command).map_err(|err| UserError::CannotCreateBranch {
         command: command.to_string(),
         err: err.to_string(),

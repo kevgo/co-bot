@@ -35,7 +35,7 @@ pub struct Tracker {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Git {
-    pub branch_name
+    pub branch_name: String,
     pub workspace_path: String,
     pub create_workspace: String,
     pub create_branch: String,
