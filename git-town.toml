@@ -1,0 +1,11 @@
+# See https://www.git-town.com/configuration-file for details
+
+[branches]
+main = "main"
+
+[hosting]
+forge-type = "github"
+github-connector = "gh"
+
+[ship]
+strategy = "squash-merge"
