@@ -40,13 +40,40 @@ pub fn run(issue: TicketIdOrUrl, verbose: bool) -> Result<ExitCode> {
     // run the code generator
     let _query = ticket.to_query();
 
-    // commit the changes
+    // create Git workspace and branch
 
-    // create the PR
+    // create .co-bot/session.md with plan
+    // - create the plan
+    // - create the PR
+    // - wait for user feedback
+    // if comments:
+    // - update .co-bot/session.md
+    // - tag the human in the PR
+
+    // create the code:
+    // - run the code generator
+    // - commit the changes
+    // - run the review agent
+    // - implement the feedback
+    // - tag the human in the PR
 
     // wait for user feedback
 
-    // cleanup the Git workspace
+    // if comments:
+    // - update the persistent memory and the session memory with the feedback
+    // - implement the requested changes
+    // - run the review agent
+    // - implement the feedback
+    // - tag the human in the PR
+
+    // if "finalize" command:
+    // - update the persistent memory with learnings from this session
+    // - remove the session file
+
+    // if PR was merged:
+    // - remove the Git worktree
+    // - remove the local branch
+    // - sync all local branches
 
     Ok(ExitCode::SUCCESS)
 }
