@@ -20,7 +20,7 @@ impl Data {
             .git
             .branch_name
             .replace("{{ticket.id}}", &ticket.id.to_string())
-            .replace("{{ticket.title}}", ticket.title.as_ref())
+            .replace("{{ticket.title}}", &escape(&ticket.title))
     }
 
     pub fn load_tracker_token(&self) -> Result<String> {
