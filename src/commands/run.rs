@@ -4,12 +4,13 @@ use crate::logger::Logger;
 use crate::{config, git, log};
 use std::process::ExitCode;
 
-pub fn run(issue: TicketIdOrUrl, verbose: bool) -> Result<ExitCode> {
+pub fn run(ticket: TicketIdOrUrl, verbose: bool) -> Result<ExitCode> {
     let logger = Logger { verbose };
 
-    // load issue
-    let issue_id = issue.id()?;
+    // load configuration
     let config = config::load()?;
+
+    // instantiate tracker
     let tracker_token = config.load_tracker_token()?;
     log!(logger, "Tracker token: {}", tracker_token);
     let tracker = config.load_tracker(tracker_token)?;
@@ -19,12 +20,14 @@ pub fn run(issue: TicketIdOrUrl, verbose: bool) -> Result<ExitCode> {
         config.file.tracker.tracker_type,
         config.file.tracker.url
     );
-    let ticket = tracker.load_ticket(&issue_id)?;
-    log!(logger, "Ticket #{}: {}", issue_id, ticket);
 
-    // create Git workspace and branch
+    // load ticket
+    let ticket_id = ticket.id()?;
+    let ticket = tracker.load_ticket(&ticket_id)?;
+    log!(logger, "Ticket #{}: {}", ticket.id, ticket);
+
+    // create Git branch and workspace
     let branch_name = config.branch_name(&ticket);
-
     git::create_branch(&config.file.git.create_branch, &branch_name)?;
     log!(logger, "Created branch: {}", branch_name);
     let workspace = config.workspace_path(&ticket)?;
