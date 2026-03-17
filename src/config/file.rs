@@ -6,7 +6,7 @@ use std::fmt::Display;
 
 const FILE_NAME: &str = "co-bot.toml";
 
-pub fn load() -> Result<Config> {
+pub fn load() -> Result<File> {
     let Ok(content) = std::fs::read_to_string(FILE_NAME) else {
         return Err(UserError::ConfigFileNotFound(FILE_NAME.to_string()));
     };
@@ -16,21 +16,35 @@ pub fn load() -> Result<Config> {
     })
 }
 
-#[derive(Debug, Deserialize)]
-pub struct Config {
+/// low-level configuration data as it is in the config file
+#[derive(Debug, Default, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub struct File {
     pub tracker: Tracker,
+    pub git: Git,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Default, Deserialize)]
 pub struct Tracker {
     #[serde(rename = "type")]
     pub tracker_type: TrackerType,
     pub url: String,
+    #[serde(rename = "token-source")]
     pub token_source: String,
 }
 
-#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[derive(Debug, Default, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub struct Git {
+    pub branch_name: String,
+    pub workspace_path: String,
+    pub create_workspace: String,
+    pub create_branch: String,
+}
+
+#[derive(Debug, Default, Deserialize, Eq, PartialEq)]
 pub enum TrackerType {
+    #[default]
     GitHub,
 }
 
@@ -42,7 +56,7 @@ impl Display for TrackerType {
     }
 }
 
-impl TryFrom<&str> for Config {
+impl TryFrom<&str> for File {
     type Error = UserError;
 
     fn try_from(text: &str) -> Result<Self> {
@@ -61,12 +75,18 @@ mod tests {
 [tracker]
 type = "GitHub"
 url = "https://github.com/kevgo/co-bot/issues"
-token_source = "gh"
+token-source = "git config git-town.github-token"
+
+[git]
+branch-name = "{{ticket.id}}-{{ticket.title}}"
+workspace-path = "../{{ticket.id}}-{{ticket.title}}"
+create-workspace = "git worktree add ../{{workspace}}"
+create-branch = "git town hack {{workspace}}"
 "#;
 
     #[test]
     fn parse_full_config() {
-        let config = Config::try_from(TOML_CONTENT).unwrap();
+        let config = File::try_from(TOML_CONTENT).unwrap();
 
         // tracker
         assert_eq!(config.tracker.tracker_type, TrackerType::GitHub);

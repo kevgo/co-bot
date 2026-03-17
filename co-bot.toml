@@ -2,23 +2,17 @@
 type = "GitHub"
 url = "https://github.com/kevgo/co-bot/issues"
 human = "kevgo"
-token_source = "git config git-town.github-token"  # shell script that prints the tracker token
+token-source = "git config git-town.github-token"  # shell script that prints the tracker token
 
-[git]
-# shell command to create the Git workspace
-create-workspace = "git worktree add ../{{ticket.id}}-{{ticket.title}} && cd ../{{ticket.id}}-{{ticket.title}}"
+git.branch.name = "{{ticket.id}}-{{ticket.title}}"  # name of the Git branch to create
+git.branch.create = "git town hack {{git.branch.name}}"      # shell command to create a Git branch for the ticket
+git.branch.cleanup = "git town sync --all"          # shell command to cleanup a Git branch that was shipped
 
-# shell command to create a Git branch for the ticket
-create-branch = "git town hack {{branch}}"
+git.workspace.path = "../{{git.branch.name}}"                                         # can be an absolute path, or relative to the directory in which co-bot runs
+git.workspace.create = "git worktree add {{git.workspace.path}} {{git.branch.name}}"  # shell command to create the Git workspace
+git.workspace.cleanup = "git worktree remove {{git.workspace.path}}"                  # shell command to cleanup the Git workspace
 
-# shell command to commit the changes that the AI created
-commit-message = "{{ticket.title}} part {{iteration}}"
-
-# shell command to cleanup a Git branch that was shipped
-cleanup-branch = "git town sync --all"
-
-# shell command to cleanup the Git workspace
-cleanup-workspace = "git worktree remove ../{{ticket.id}}-{{ticket.title}}"
+git.commit.message = "{{ticket.title}} part {{iteration}}"  # shell command to commit the changes that the AI created
 
 [code]
 

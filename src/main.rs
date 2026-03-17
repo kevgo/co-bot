@@ -4,6 +4,8 @@ mod config;
 mod connectors;
 mod domain;
 mod errors;
+mod git;
+mod logger;
 mod subshell;
 
 use crate::cli::Command;
@@ -15,7 +17,7 @@ fn main() -> ExitCode {
     match inner() {
         Ok(exit_code) => exit_code,
         Err(err) => {
-            eprintln!("Error: {:?}", err);
+            eprintln!("\nError: {err}");
             ExitCode::FAILURE
         }
     }

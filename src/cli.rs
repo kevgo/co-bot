@@ -1,4 +1,4 @@
-use crate::domain::IssueIdOrUrl;
+use crate::domain::TicketIdOrUrl;
 use clap::Parser;
 
 #[derive(Parser, Debug)]
@@ -17,6 +17,6 @@ pub struct Args {
 pub enum Command {
     Run {
         /// ID or URL of the ticket to implement
-        ticket: IssueIdOrUrl,
+        ticket: TicketIdOrUrl,
     },
 }
