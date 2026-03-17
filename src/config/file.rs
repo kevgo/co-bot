@@ -16,6 +16,7 @@ pub fn load() -> Result<File> {
     })
 }
 
+/// low-level configuration data as it is in the config file
 #[derive(Debug, Default, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct File {

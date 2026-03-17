@@ -10,6 +10,7 @@ use crate::domain::Ticket;
 use crate::errors::Result;
 use crate::subshell;
 
+/// high-level configuration data as it is used by the application
 pub struct Data {
     pub file: File,
 }
