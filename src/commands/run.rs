@@ -39,7 +39,7 @@ pub fn run(issue: IssueIdOrUrl, verbose: bool) -> Result<ExitCode> {
     // - run the review agent
     // - implement the feedback
     // - tag the human in the PR
-    
+
     // wait for user feedback
 
     // if comments:

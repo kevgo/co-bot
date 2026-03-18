@@ -4,7 +4,6 @@
 
 > Industrial-grade AI engineering
 
-
 (logo: human and robot high-fiving each other)
 
 Co-bot allows you to do sophisticated multi-agent coding workflows using the LLM

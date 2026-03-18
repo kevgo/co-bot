@@ -47,7 +47,7 @@ fn format_issue(issue: roctogen::models::Issue) -> String {
         for label in labels {
             if let Some(name) = &label.name {
                 result.push_str(name);
-                result.push_str(" ");
+                result.push(' ');
                 found_label = true;
             }
         }
